@@ -147,7 +147,7 @@ public class RestHttp {
         return sb.toString();
     }
     public static String get(String url/*,String body*/) throws KeyManagementException, NoSuchAlgorithmException, NoSuchProviderException, IOException {
-//    	System.out.println(String.format("GET url=%s, params=%s", url, null));
+    	System.out.println(String.format("GET url=%s, params=%s", url, null));
     	if(url.startsWith("https")){
     		return get(url, true);
         }else{

@@ -8,24 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import DNA.Core.*;
 import DNA.Fixed8;
 import DNA.Helper;
 import DNA.UInt160;
 import DNA.UInt256;
-import DNA.Core.AssetType;
-import DNA.Core.Block;
-import DNA.Core.Blockchain;
-import DNA.Core.IssueTransaction;
-import DNA.Core.RecordTransaction;
-import DNA.Core.RecordType;
-import DNA.Core.RegisterTransaction;
-import DNA.Core.SignatureContext;
-import DNA.Core.Transaction;
-import DNA.Core.TransactionAttribute;
-import DNA.Core.TransactionAttributeUsage;
-import DNA.Core.TransactionInput;
-import DNA.Core.TransactionOutput;
-import DNA.Core.TransferTransaction;
 import DNA.Core.Scripts.Program;
 import DNA.Implementations.Blockchains.Rest.RestBlockchain;
 import DNA.Implementations.Wallets.SQLite.UserWallet;
@@ -45,6 +32,7 @@ import DNA.sdk.info.transaction.TxInputInfo;
 import DNA.sdk.info.transaction.TxOutputInfo;
 
 import com.alibaba.fastjson.JSON;
+import org.bouncycastle.math.ec.ECPoint;
 
 
 /**
@@ -125,7 +113,9 @@ public class UserWalletManager {
 	public String createAccount() {
 		return createAddress();
 	}
-	
+	public String createAccount(byte[] privateKey) {
+		return uw.getContract(Contract.createSignatureContract(uw.createAccount(privateKey).publicKey).address()).address();
+	}
 	/**
 	 * 创建多个账户
 	 */
@@ -386,6 +376,19 @@ public class UserWalletManager {
 	public TransferTransaction createTrfTx(String sendAddr, List<TxJoiner> list, String desc) {
 		return uw.makeTransaction(getTrfTx(list, desc), Fixed8.ZERO, getAddress(sendAddr));
 	}
+
+	public StateUpdateTransaction createStateUpdate(String namespace, String key, String value,ECPoint pubkey ) {
+		StateUpdateTransaction tx = new StateUpdateTransaction();
+		tx.attributes = new TransactionAttribute[0];
+		tx.inputs = new TransactionInput[0];
+		tx.outputs = new TransactionOutput[0];
+		tx.namespace = namespace.getBytes();
+		tx.key = key.getBytes();
+		tx.value = value.getBytes();
+		tx.updater = pubkey;
+		return tx;
+	}
+
 	// 2. 交易签名
 	/**
 	 * 交易签名
@@ -473,7 +476,7 @@ public class UserWalletManager {
 	
 	
 	// 获取账户
-	private Account getAccount(String address) {
+	public Account getAccount(String address) {
 		return uw.getAccount(uw.getContract(address).publicKeyHash);
 	}
 	// 获取地址

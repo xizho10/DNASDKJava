@@ -38,7 +38,7 @@ public class RestNode {
 	}
 	
 	public Transaction getRawTransaction(String txid) throws RestException {
-		String rs = restClient.getTransaction(authType, accessToken, Helper.reverse(txid));
+		String rs = restClient.getTransaction(authType, accessToken, txid);//Helper.reverse(txid)
 		Result rr = JSON.parseObject(rs, Result.class);
 		if(rr.Error == 0) {
 			try {

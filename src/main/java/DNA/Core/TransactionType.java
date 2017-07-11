@@ -40,6 +40,7 @@ public enum TransactionType {
      * 存证交易
      */
     RecordTransaction(0x81),
+    StateUpdateTransaction(0x90),
     
     ;
 
